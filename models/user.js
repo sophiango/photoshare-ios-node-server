@@ -1,35 +1,25 @@
 var mongoose = require('mongoose');
 
-var albumSchema = new mongoose.Schema({
-	id:Number,
-    institution: String,
-    degree: String,
-    fromYear: String,
-    toYear: String,
-    photo: [photoSchema]
-},{ _id : false });
-
 var photoSchema = new mongoose.Schema({
-	id:Number,
-    position: String,
-    company: String,
-    from: String,
-    to: String,
-    description:String
+    photoId:{type : String , required : true, unique: true, dropDups: true},
+    photoUrl: String,
+    tinyUrl: String,
+    metadata: String,
+    public: Boolean
 },{ _id : false });
 
-var statusSchema = new mongoose.Schema({
-    content: String,
-    createAt: {type: Date, default: Date.now}
-})
+var albumSchema = new mongoose.Schema({
+	albumId:{type : String , required : true, unique: true, dropDups: true},
+    albumName: String,
+    createAt: {type: Date, default: Date.now},
+    photos: [photoSchema]
+},{ _id : false });
 
 var userSchema = new mongoose.Schema({
     userId : {type : String , required : true, unique: true, dropDups: true},
-    firstName: {type : String , required : true},
-    lastName: {type : String , required : true},
-    imageUrl : String,
-    headline : String,
-    skills: [String],
+    name: {type : String , required : true},
+    email: {type : String , required : true},
+    profilepicUrl : String,
     album:[albumSchema]
 });
 
