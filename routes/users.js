@@ -12,8 +12,7 @@ router.post('/',function(req,res){
         profilepicUrl: req.body.profilepicUrl,
         album: [{
             albumId:00000, // default album
-            albumName: "Default", // createAt by default
-            photos: null
+            albumName: "Default" // createAt by default
         }]
     });
     newUser.save(function (err, newUser) {
@@ -66,7 +65,20 @@ router.post('/:user_id/album',function (req, res) {
         }
     });
 });
-//
+
+router.get('/:user_id/album/:album_id',function (req, res) {
+    console.log("album query: "  + req.params.album_id);
+    User.findOne({userId:req.params.user_id, 'album.albumId': req.params.album_id},{'album.$': 1}, function (err, result) {
+        if (err) {
+            res.status(404).send("Cannot find user or album with given id" + err);
+        }
+        else {
+            res.status(200).send(result);
+        }
+    });
+});
+
+
 //router.post('/:user_id/edit_profile',myMulter, function (req, res) {
 //    var user_id = req.params.user_id;
 //    var link='';
