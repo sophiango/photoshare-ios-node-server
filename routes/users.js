@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var chance = require('chance').Chance();
 
 // when user successfully log in with facebook, it will hit this
 router.post('/',function(req,res){
@@ -26,48 +27,45 @@ router.post('/',function(req,res){
 });
 
 
-//router.get('/:user_id', function (req, res) {
-//    var user_id = req.params.user_id;
-//    if (user_id < 0) {
-//        res.status(404).send('Invalid company id');
-//    }
-//    User.findOne({userId:user_id},function(err,foundUser){
-//        if (err || foundUser===null) {
-//            console.log(" router get userId"+err);
-//            res.render('index',{
-//                message:null,
-//                err: 'Cannot find user'
-//            })
-//        }
-//        else {
-//            console.log(foundUser);
-//            res.render('user',{
-//                User: foundUser});
-//        }
-//    });
-//});
-//
-//router.get('/:user_id/edit_profile',function (req, res) {
-//    User.findOne({userId:req.params.user_id}, function (err, foundUser) {
-//        if (err) {
-//            console.log("Error in finding user "+err);
-//            if (err) {
-//                res.render('index',{
-//                    message:null,
-//                    err: 'Cannot find user'
-//                });
-//            }
-//        }
-//        else {
-//            console.log("User.imageUrl "+foundUser.imageUrl);
-//            console.log("User.headline "+foundUser.headline);
-//            res.render('edit_profile',{
-//                user_id: req.params.user_id,User:foundUser
-//            });
-//        }
-//    });
-//
-//});
+router.get('/:user_id', function (req, res) {
+    var user_id = req.params.user_id;
+    if (user_id < 0) {
+        res.status(404).send('Invalid user id');
+    }
+    User.findOne({userId:user_id},function(err,foundUser){
+        if (err || foundUser===null) {
+            res.status(404).send(err);
+        }
+        else {
+            res.status(200).send(foundUser);
+        }
+    });
+});
+
+router.post('/:user_id/album',function (req, res) {
+    var album_id = chance.natural({min: 1, max: 100000}).toString();
+    User.findOne({userId:req.params.user_id}, function (err, foundUser) {
+        if (err) {
+            if (err) {
+               res.status(404).send("Cannot find user with that id");
+            }
+        }
+        else {
+            foundUser.album.push({
+                albumId:album_id,
+                albumName: req.body.albumName
+            });
+            foundUser.save(function (err) {
+                if (err) {
+                    res.status(400).send("Cannot save album");
+                }
+                else{
+                    res.status(200).send("Successfully added album " + foundUser);
+                }
+            });
+        }
+    });
+});
 //
 //router.post('/:user_id/edit_profile',myMulter, function (req, res) {
 //    var user_id = req.params.user_id;
