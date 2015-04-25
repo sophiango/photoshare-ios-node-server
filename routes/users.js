@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var Photo = require('../models/photo');
 var chance = require('chance').Chance();
 
 // when user successfully log in with facebook, it will hit this
@@ -11,10 +12,11 @@ router.post('/',function(req,res){
         email: req.body.email,
         profilepicUrl: req.body.profilepicUrl,
         album: [{
-            albumId:00000, // default album
+            albumId:"0", // default album
             albumName: "Default" // createAt by default
         }]
     });
+    console.log(newUser);
     newUser.save(function (err, newUser) {
         if (err){
             res.status(404).send(err);
@@ -24,7 +26,6 @@ router.post('/',function(req,res){
         }
     });
 });
-
 
 router.get('/:user_id', function (req, res) {
     var user_id = req.params.user_id;
@@ -42,12 +43,10 @@ router.get('/:user_id', function (req, res) {
 });
 
 router.post('/:user_id/album',function (req, res) {
-    var album_id = chance.natural({min: 1, max: 100000}).toString();
+    var album_id = chance.natural({min: 1, max: 1000}).toString();
     User.findOne({userId:req.params.user_id}, function (err, foundUser) {
         if (err) {
-            if (err) {
-               res.status(404).send("Cannot find user with that id");
-            }
+            res.status(404).send("Cannot find user with that id");
         }
         else {
             foundUser.album.push({
@@ -62,6 +61,17 @@ router.post('/:user_id/album',function (req, res) {
                     res.status(200).send("Successfully added album " + foundUser);
                 }
             });
+        }
+    });
+});
+
+router.get('/:user_id/album/:album_id',function (req, res) { // get album by id
+    User.findOne({userId:req.params.user_id, 'album.albumId': req.params.album_id},{'album.$': 1}, function (err, result) {
+        if (err) {
+            res.status(404).send("Cannot find user or album with given id" + err);
+        }
+        else {
+            res.status(200).send(result);
         }
     });
 });
@@ -102,18 +112,52 @@ router.delete('/:user_id/album/:album_id',function (req, res) { // delete album 
 //    });
 //});
 
-router.get('/:user_id/album/:album_id',function (req, res) { // get album by id
-    console.log("album query: "  + req.params.album_id);
-    User.findOne({userId:req.params.user_id, 'album.albumId': req.params.album_id},{'album.$': 1}, function (err, result) {
-        if (err) {
-            res.status(404).send("Cannot find user or album with given id" + err);
+router.post('/:user_id/album/:album_id/photo',function (req, res) {
+    var photo_id = chance.natural({min: 1, max: 1000}).toString();
+    var newPhoto = new Photo ({
+        photoId:photo_id,
+        albumId: req.params.album_id,
+        userId: req.params.user_id,
+        photoUrl: req.body.photoUrl,
+        tinyUrl: req.body.tinyUrl,
+        metadata: req.body.metadata,
+        public: req.body.public
+    })
+    newPhoto.save(function(err,newPhoto){
+        if (err){
+            res.status(404).send(err);
         }
         else {
-            res.status(200).send(result);
+            res.status(201).send(newPhoto);
+        }
+    })
+});
+
+router.get('/:user_id/album/:album_id/photo/:photo_id',function (req, res) {
+    var photo_id = chance.natural({min: 1, max: 100000}).toString();
+    Photo.findOne({userId:req.params.user_id, 'albumId': req.params.album_id}, function (err, foundAlbum) {
+        if (err) {
+            res.status(404).send("Cannot find user with that id");
+        }
+        else {
+            console.log(foundAlbum);
+            foundAlbum.push({
+                photoId:photo_id,
+                photoUrl: req.body.photoUrl,
+                tinyUrl: req.body.tinyUrl,
+                metadata: req.body.metadata
+            });
+            foundAlbum.save(function (err) {
+                if (err) {
+                    res.status(400).send("Cannot save album");
+                }
+                else{
+                    res.status(200).send("Successfully added album " + foundAlbum);
+                }
+            });
         }
     });
 });
-
 
 //router.post('/:user_id/edit_profile',myMulter, function (req, res) {
 //    var user_id = req.params.user_id;

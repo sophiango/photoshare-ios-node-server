@@ -1,18 +1,18 @@
 var mongoose = require('mongoose');
 
 var photoSchema = new mongoose.Schema({
-    photoId:{type : String , required : true, unique: true, dropDups: true},
+    photoId:{type : String , required : true},
     photoUrl: String,
     tinyUrl: String,
     metadata: String,
-    public: Boolean
+    public: {type: Boolean, default: false}
 },{ _id : false });
 
 var albumSchema = new mongoose.Schema({
-	albumId:{type : String , required : true, unique: true, dropDups: true},
+	albumId:{type : String , required : true},
     albumName: String,
-    createAt: {type: Date, default: Date.now},
-    photos: [photoSchema]
+    createAt: {type: Date, default: Date.now}
+    //photos: [photoSchema]
 },{ _id : false });
 
 var userSchema = new mongoose.Schema({
