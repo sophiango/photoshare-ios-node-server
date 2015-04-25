@@ -40,7 +40,7 @@
         <entry file="file://$PROJECT_DIR$/models/user.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
-              <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
+              <caret line="12" column="13" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -49,9 +49,13 @@
       <file leaf-file-name="users.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/routes/users.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7758621" vertical-offset="915" max-vertical-offset="5880">
-              <caret line="79" column="0" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
-              <folding />
+            <state vertical-scroll-proportion="0.31034482" vertical-offset="927" max-vertical-offset="1425">
+              <caret line="69" column="44" selection-start-line="69" selection-start-column="44" selection-end-line="69" selection-end-column="44" />
+              <folding>
+                <element signature="e#2376#2458#0" expanded="false" />
+                <element signature="e#3298#3688#0" expanded="false" />
+                <element signature="e#3693#3763#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -518,12 +522,12 @@
       <created>1429979460352</created>
       <option name="number" value="Default" />
       <updated>1429979460352</updated>
-      <workItem from="1429979471799" duration="9653000" />
+      <workItem from="1429979471799" duration="11466000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="9653000" />
+    <option name="totallyTimeSpent" value="11466000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="321" y="23" width="963" height="712" extended-state="0" />
@@ -574,7 +578,9 @@
     </option>
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
@@ -582,14 +588,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="5.7061853" vertical-offset="2196" max-vertical-offset="15420">
           <caret line="296" column="0" selection-start-line="296" selection-start-column="0" selection-end-line="296" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/user.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
-          <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
           <folding />
         </state>
       </provider>
@@ -602,11 +600,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/models/user.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
+          <caret line="12" column="13" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/routes/users.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7758621" vertical-offset="915" max-vertical-offset="5880">
-          <caret line="79" column="0" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
-          <folding />
+        <state vertical-scroll-proportion="0.31034482" vertical-offset="927" max-vertical-offset="1425">
+          <caret line="69" column="44" selection-start-line="69" selection-start-column="44" selection-end-line="69" selection-end-column="44" />
+          <folding>
+            <element signature="e#2376#2458#0" expanded="false" />
+            <element signature="e#3298#3688#0" expanded="false" />
+            <element signature="e#3693#3763#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

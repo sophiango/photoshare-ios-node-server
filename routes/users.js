@@ -20,7 +20,7 @@ router.post('/',function(req,res){
             res.status(404).send(err);
         }
         else {
-            res.status(200).send(newUser);
+            res.status(201).send(newUser);
         }
     });
 });
@@ -66,7 +66,43 @@ router.post('/:user_id/album',function (req, res) {
     });
 });
 
-router.get('/:user_id/album/:album_id',function (req, res) {
+router.delete('/:user_id/album/:album_id',function (req, res) { // delete album by id
+    User.update({userId:req.params.user_id},
+        {$pull:{album:{albumId:req.params.album_id}}},
+        {safe:true},
+        function (err, result) {
+        if (err) {
+            res.status(404).send("Cannot find user or album with given id" + err);
+        }
+        else {
+            res.status(204).send(result);
+        }
+    });
+});
+
+//router.put('/:user_id/album/:album_id',function (req, res) { // edit album by id
+//    User.findOne({userId:req.params.user_id, 'album.albumId': req.params.album_id},{'album.$': 1}, function (err, foundAlbum) {
+//        if (err) {
+//            res.status(404).send("Cannot find user or album with given id" + err);
+//        }
+//        else {
+//            User.update({'album.albumId': req.params.album_id},
+//                {'$set': {
+//                    albumName: req.body.albumName
+//                }
+//            }, function (err, albumAffected) {
+//                if (err) {
+//                    res.status(404).send("Error updating" + err);
+//                }
+//                else {
+//                    res.status(200).send("Successfully update album " + albumAffected);
+//                }
+//            });
+//        }
+//    });
+//});
+
+router.get('/:user_id/album/:album_id',function (req, res) { // get album by id
     console.log("album query: "  + req.params.album_id);
     User.findOne({userId:req.params.user_id, 'album.albumId': req.params.album_id},{'album.$': 1}, function (err, result) {
         if (err) {
@@ -158,229 +194,4 @@ router.get('/:user_id/album/:album_id',function (req, res) {
 //        });
 //});
 //
-//router.post('/:user_id/exp',function (req, res) {
-//    var userId=req.params.user_id;
-//    User.findOne({userId:userId},function(err,foundUser) {
-//        if (err) {
-//            console.log(err);
-//            res.render('index',{
-//                message:null,
-//                err: 'Cannot find user'
-//            })
-//        }
-//        else {
-//            var cnt= foundUser.experience.length;
-//            console.log("Reached add ");
-//            console.log("Cnt "+cnt);
-//            foundUser.experience.push({
-//                position: req.body.inputPosition,
-//                company: req.body.inputCompany,
-//                from: req.body.inputFrom,
-//                to: req.body.inputTo,
-//                description: req.body.inputDesc
-//            });
-//            foundUser.save(function (err) {
-//                if (err) {
-//                    console.log(err);
-//                    res.render('add_new_exp',{
-//                        user_id: User.userId,
-//                        message:null,
-//                        err: "Cannot add new experience"
-//                    })
-//                }
-//                else{
-//                    /* res.render('add_new_exp',{
-//                     user_id: User.userId,
-//                     message:"Successfully added an experience. You can add more experience or go back to your profile",
-//                     err: null
-//                     })*/
-//                    res.redirect('/user/'+userId);
-//                }
-//            });
-//        }
-//    });
-//});
-//
-//router.get('/:user_id/exp',function (req, res) {
-//    res.render('add_new_exp',{
-//        user_id: req.params.user_id,
-//        message:null,
-//        err:null
-//    })
-//});
-//
-//router.get('/:user_id/edit_exp',function (req, res) {
-//    User.findOne({userId:req.params.user_id},function(err,foundUser){
-//        if (err) {
-//            console.log(err);
-//            res.render('index',{
-//                message:null,
-//                err: 'Cannot find user'
-//            })
-//        }
-//        else {
-//            if(foundUser.experience.length>0) {
-//                res.render('edit_exp', {
-//                    user_id: req.params.user_id,
-//                    User: foundUser
-//                })
-//            }
-//            else{
-//                res.render('add_new_exp', {
-//                    user_id: req.params.user_id,
-//                    message: null,
-//                    err: null
-//                })
-//            }
-//        }
-//    });
-//});
-//
-//router.post('/:user_id/edit_exp', function (req, res) {
-//    var user_id = req.params.user_id;
-//    console.log("req "+req.body);
-//    return User.findOne({userId: req.params.user_id}, function (err, foundUser) {
-//        foundUser.experience[0].position= req.body.inputPosition;
-//        foundUser.experience[0].company= req.body.inputCompany;
-//        foundUser.experience[0].from= req.body.inputFrom;
-//        foundUser.experience[0].to= req.body.inputTo;
-//        foundUser.experience[0].description= req.body.inputDesc;
-//        return foundUser.save(function (err) {
-//            if (!err) {
-//                /* res.render('user', {
-//                 connection_count: '100',
-//                 User: foundUser
-//                 });*/
-//                res.redirect('/user/'+user_id);
-//            } else {
-//                console.log(err);
-//            }
-//        });
-//    });
-//});
-//
-//router.post('/:user_id/edu',function (req, res) {
-//    var userId=req.params.user_id;
-//    User.findOne({userId:userId},function(err,foundUser) {
-//        if (err) {
-//            console.log(err);
-//            res.render('index',{
-//                message:null,
-//                err: 'Cannot find user'
-//            })
-//        }
-//        else {
-//            var cnt= foundUser.education.length;
-//            console.log("Reached add ");
-//            console.log("Cnt "+cnt);
-//            foundUser.education.push({
-//                id:cnt+1,
-//                institution: req.body.inputSchool,
-//                degree: req.body.inputDegree,
-//                fromYear: req.body.inputFrom,
-//                toYear: req.body.inputTo
-//            });
-//            foundUser.save(function (err) {
-//                if (err) {
-//                    res.render('add_new_edu',{
-//                        user_id: User.userId,
-//                        message:null,
-//                        err: "Cannot add new institution"
-//                    })
-//
-//
-//                }
-//                else{
-//                    /*res.render('add_new_edu',{
-//                     user_id: User.userId,
-//                     message:"Successfully added an institution. You can add more institution or go back to your profile",
-//                     err: null
-//                     })*/
-//                    res.redirect('/user/'+userId);
-//                }
-//            });
-//        }
-//    });
-//});
-//
-//router.get('/:user_id/edu',function (req, res) {
-//    res.render('add_new_edu',{
-//        user_id: req.params.user_id,
-//        message:null,
-//        err:null
-//    })
-//});
-//
-//router.get('/:user_id/edit_edu',function (req, res) {
-//    User.findOne({userId:req.params.user_id},function(err,foundUser){
-//        if (err) {
-//            console.log(" router get edit_edu "+err);
-//            res.render('index',{
-//                message:null,
-//                err: 'Cannot find user'
-//            })
-//        }
-//        else {
-//            if(foundUser.education.length>0) {
-//                res.render('edit_edu', {
-//                    user_id: req.params.user_id,
-//                    User: foundUser
-//                })
-//            }
-//            else{
-//                res.render('add_new_edu', {
-//                    user_id: req.params.user_id,
-//                    message: null,
-//                    err: null
-//                })
-//            }
-//        }
-//    });
-//});
-//
-//router.post('/:user_id/edit_edu', function (req, res) {
-//    console.log("Re body "+req.body.inputDegree);
-//    var user_id = req.params.user_id;
-//    User.findOne({userId: req.params.user_id}, function (err, foundUser) {
-//        foundUser.education[0].institution= req.body.inputSchool;
-//        foundUser.education[0].degree= req.body.inputDegree;
-//        foundUser.education[0].fromYear= req.body.inputFrom;
-//        foundUser.education[0].toYear= req.body.inputTo;
-//        foundUser.save(function (err) {
-//            if (!err) {
-//                res.redirect('/user/'+user_id);
-//
-//            } else {
-//                console.log(err);
-//                res.render('index',{
-//                    message:null,
-//                    err: 'Cannot edit education'
-//                })
-//            }
-//        });
-//    });
-//});
-//
-//router.post('/:user_id/del', function (req, res) {
-//    var user_id = req.params.user_id;
-//    if (user_id < 0){
-//        res.status(404).send('Invalid company id or job id');
-//    }
-//    User.remove({userId:user_id},function(err) {
-//        if (err) {
-//            console.log(err);
-//            res.render('index',{
-//                message:null,
-//                err: 'Cannot delete user'
-//            })
-//        }
-//        else {
-//            res.render('index',{
-//                message:"Successfully delete user profile",
-//                err: null
-//            })
-//        };
-//    })
-//});
-
 module.exports = router;
