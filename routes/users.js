@@ -166,6 +166,16 @@ router.get('/:user_id/album/:album_id/photo/:photo_id',function (req, res) {
     });
 });
 
+router.delete('/:user_id/album/:album_id/photo/:photo_id',function (req, res) { // delete photo by id
+    Photo.remove({userId:req.params.user_id, albumId: req.params.album_id, photoId: req.params.photo_id}, function (err, foundPhoto) {
+        if (err) {
+            res.status(404).send("Cannot delete photo");
+        }
+        else {
+            res.status(200).send(foundPhoto);
+        }
+    });
+});
 
 
 module.exports = router;

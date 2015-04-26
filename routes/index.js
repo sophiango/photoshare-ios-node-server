@@ -2,10 +2,26 @@ var express = require('express');
 var router = express.Router();
 var Photo = require('../models/photo');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+
+router.get('/', function(req, res) {
+    var queryParam = req.query;
+    var query=req.query.query;
+
+    if (query!==null){
+            var name=query;
+            console.log("search: " + name);
+            Photo.find({metadata: {$regex: new RegExp('^' + name, 'i')}},function(err,foundPhoto){
+                console.log(foundPhoto);
+                if (err) {
+                    console.log(err);
+                    res.status(400).send("Cannot find");
+                }
+                else {
+                    res.status(200).send(foundPhoto);
+                }})
+        }
 });
+
 
 router.get('/photos',function (req, res) { // public access for all photos that marked as public
     Photo.find({public:true}, function (err, foundPhoto) {
