@@ -2,11 +2,14 @@ var express = require('express');
 var router = express.Router();
 var Photo = require('../models/photo');
 
-
+// search?option=meta&q=something
 router.get('/search', function(req, res) {
-    if (req.query.query!==null){
-            console.log("search: " + req.query.query);
-            Photo.find({metadata: {'$in':[req.query.query]}},function(err,foundPhoto){
+    var option=req.query.option;
+    var query=req.query.q;
+    if (option!==null && query!=null){
+        if(option == "meta"){
+            console.log("search for " + option + " " + query);
+            Photo.find({metadata: {'$in':[query]}},{public: true},function(err,foundPhoto){
                 console.log(foundPhoto);
                 if (err) {
                     console.log(err);
@@ -16,6 +19,19 @@ router.get('/search', function(req, res) {
                     res.status(200).send(foundPhoto);
                 }})
         }
+        if(option == "name"){
+            console.log("search for " + option + " " + query);
+            Photo.find({photoName: {$regex: new RegExp('^' + query, 'i')}},{public: true},function(err,foundPhoto){
+                console.log(foundPhoto);
+                if (err) {
+                    console.log(err);
+                    res.status(400).send("Cannot find");
+                }
+                else {
+                    res.status(200).send(foundPhoto);
+                }})
+        }
+    }
 });
 
 
