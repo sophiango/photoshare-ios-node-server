@@ -134,8 +134,7 @@ router.post('/:user_id/album/:album_id/photo',function (req, res) {
 });
 
 router.get('/:user_id/album/:album_id/photo/:photo_id',function (req, res) {
-    var photo_id = chance.natural({min: 1, max: 100000}).toString();
-    Photo.findOne({userId:req.params.user_id, 'albumId': req.params.album_id}, function (err, foundAlbum) {
+    Photo.findOne({userId:req.params.user_id, albumId: req.params.album_id, photoId: req.params.photo_id}, function (err, foundPhoto) {
         if (err) {
             res.status(404).send("Cannot find user with that id");
         }
