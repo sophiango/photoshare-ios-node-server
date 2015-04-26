@@ -3,14 +3,10 @@ var router = express.Router();
 var Photo = require('../models/photo');
 
 
-router.get('/', function(req, res) {
-    var queryParam = req.query;
-    var query=req.query.query;
-
-    if (query!==null){
-            var name=query;
-            console.log("search: " + name);
-            Photo.find({metadata: {$regex: new RegExp('^' + name, 'i')}},function(err,foundPhoto){
+router.get('/search', function(req, res) {
+    if (req.query.query!==null){
+            console.log("search: " + req.query.query);
+            Photo.find({metadata: {'$in':[req.query.query]}},function(err,foundPhoto){
                 console.log(foundPhoto);
                 if (err) {
                     console.log(err);
