@@ -5,9 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var routes = require('./routes/index');
+var index = require('./routes/index');
 var users = require('./routes/users');
-
+var session = require('express-session');
 var app = express();
 
 mongoose.connect('mongodb://cmpe277:cmpe277@ds047107.mongolab.com:47107/cmpe277');
@@ -24,7 +24,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/',index);
 app.use('/user', users);
+
+//app.use(session({
+//    secret: 'keyboard cat',
+//    resave: true,
+//    saveUninitialized: true
+//}));
+
+//var passport = require('passport');
+//var expressSession = require('express-session');
+//app.use(expressSession({secret: 'mySecretKey'}));
+//app.use(passport.initialize());
+//app.use(passport.session());
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
