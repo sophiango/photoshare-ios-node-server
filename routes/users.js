@@ -37,7 +37,7 @@ router.post('/',function(req,res){
     });
 });
 
-router.get('/:user_id', function (req, res) {
+router.get('/:user_id', function (req, res) { // get user profile by id
     var user_id = req.params.user_id;
     if (user_id < 0) {
         res.status(404).send('Invalid user id');
@@ -52,7 +52,7 @@ router.get('/:user_id', function (req, res) {
     });
 });
 
-router.post('/:user_id/album',function (req, res) {
+router.post('/:user_id/album',function (req, res) { // create new album
     var album_id = chance.natural({min: 1, max: 1000}).toString();
     User.findOne({userId:req.params.user_id}, function (err, foundUser) {
         if (err) {
@@ -122,7 +122,7 @@ router.delete('/:user_id/album/:album_id',function (req, res) { // delete album 
 //    });
 //});
 
-router.post('/:user_id/album/:album_id/photo',function (req, res) {
+router.post('/:user_id/album/:album_id/photo',function (req, res) { // create new photo
     var photo_id = chance.natural({min: 1, max: 1000}).toString();
     var newPhoto = new Photo ({
         photoId:photo_id,
@@ -155,7 +155,7 @@ router.get('/:user_id/album/:album_id/photos',function (req, res) { // get all p
     });
 });
 
-router.get('/:user_id/album/:album_id/photo/:photo_id',function (req, res) {
+router.get('/:user_id/album/:album_id/photo/:photo_id',function (req, res) { // get photo by id
     Photo.findOne({userId:req.params.user_id, albumId: req.params.album_id, photoId: req.params.photo_id}, function (err, foundPhoto) {
         if (err) {
             res.status(404).send("Cannot find user with that id");
@@ -175,6 +175,40 @@ router.delete('/:user_id/album/:album_id/photo/:photo_id',function (req, res) { 
             res.status(200).send(foundPhoto);
         }
     });
+});
+
+router.get('/:user_id/search', function(req, res) { // search album name or photo (for photo, can search across metadata or photoname
+    var option = req.query.option;
+    var query=req.query.q;
+    if (option!=null && query!=null){
+        if(option=="photo") {
+            console.log("search for " + option + " " + query);
+            Photo.find({userId:req.params.user_id,'$or': [{metadata: {'$in': [query]}}, {photoName: {$regex: new RegExp('^' + query, 'i')}}]},
+                function (err, foundPhoto) {
+                if (err) {
+                    console.log(err);
+                    res.status(400).send("Cannot find");
+                }
+                else {
+                    res.status(200).send(foundPhoto);
+                }
+            })
+        }
+        if(option=="album") {
+            console.log("search for " + option + " " + query);
+            User.find(
+                {userId:req.params.user_id, 'album.albumName':{$regex: new RegExp('^' + query, 'i')}},{'album.$': 1},
+                function (err, foundAlbum) {
+                if (err) {
+                    console.log(err);
+                    res.status(400).send("Cannot find");
+                }
+                else {
+                    res.status(200).send(foundAlbum);
+                }
+            })
+        }
+    }
 });
 
 

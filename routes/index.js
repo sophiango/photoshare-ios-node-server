@@ -38,7 +38,7 @@ var Photo = require('../models/photo');
 router.get('/search', function(req, res) { // can search across metadata and photoname at the same time
     var query=req.query.q;
     if (query!=null){
-            console.log("search for " + option + " " + query);
+            console.log("search for " + query);
             Photo.find({'$or':[{metadata: {'$in':[query]}},{photoName: {$regex: new RegExp('^' + query, 'i')}}]},{public: true},function(err,foundPhoto){
                 console.log(foundPhoto);
                 if (err) {
