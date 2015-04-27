@@ -10,6 +10,16 @@ var users = require('./routes/users');
 var session = require('express-session');
 var app = express();
 
+
+var util = require('util');
+// multi part handeling
+var multer  = require('multer');
+//var mongooseschema= require('models/userdata');
+
+var app = express();
+app.use(bodyParser.json());
+
+
 mongoose.connect('mongodb://cmpe277:cmpe277@ds047107.mongolab.com:47107/cmpe277');
 
 // view engine setup
@@ -25,7 +35,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/',index);
-app.use('/user', users);
+app.use('/photoshare/api/v1/users', users);
 
 //app.use(session({
 //    secret: 'keyboard cat',

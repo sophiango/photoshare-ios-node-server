@@ -43,9 +43,11 @@ router.get('/search', function(req, res) { // can search across metadata and pho
                 console.log(foundPhoto);
                 if (err) {
                     console.log(err);
-                    res.status(400).send("Cannot find");
+                    res.setHeader('Content-Type', 'application/json');
+                    res.status(200).send("Cannot find");
                 }
                 else {
+                    res.setHeader('Content-Type', 'application/json');
                     res.status(200).send(foundPhoto);
                 }})
     }
@@ -54,9 +56,11 @@ router.get('/search', function(req, res) { // can search across metadata and pho
 router.get('/photos',function (req, res) { // public access for all photos that marked as public
     Photo.find({public:true}, function (err, foundPhoto) {
         if (err) {
-            res.status(404).send("Cannot find user with that id");
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).send("Cannot find user with that id");
         }
         else {
+            res.setHeader('Content-Type', 'application/json');
             res.status(200).send(foundPhoto);
         }
     });
