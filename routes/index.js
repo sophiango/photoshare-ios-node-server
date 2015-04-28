@@ -39,7 +39,7 @@ router.get('/search', function(req, res) { // can search across metadata and pho
     var query=req.query.q;
     if (query!=null){
             console.log("search for " + query);
-            Photo.find({'$or':[{metadata: {'$in':[query]}},{photoName: {$regex: new RegExp('^' + query, 'i')}}]},{public: true},function(err,foundPhoto){
+            Photo.find({'$and':[{'$or':[{metadata: {$regex: new RegExp('^' + query, 'i')}}, {location: {$regex: new RegExp('^' + query, 'i')}},{photoName: {$regex: new RegExp('^' + query, 'i')}}]},{public: true}]},function(err,foundPhoto){
                 console.log(foundPhoto);
                 if (err) {
                     console.log(err);

@@ -6,9 +6,9 @@ var photoSchema = new mongoose.Schema({
     userId:{type : String , required : true},
     photoName: String,
     photoUrl: String,
-    tinyUrl: String,
-    metadata: [String],
-    public: {type: Boolean, default: false}
+    metadata: String,
+    location: String,
+    public: {type: Boolean, default: true}
 });
 
 module.exports = mongoose.model('Photo', photoSchema);

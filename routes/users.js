@@ -3,12 +3,9 @@ var router = express.Router();
 var User = require('../models/user');
 var Photo = require('../models/photo');
 var chance = require('chance').Chance();
-var AWS = require('aws-sdk');
 var util = require('util');
 var fs = require('fs');
-// multi part handeling
-var multer  = require('multer')
-//var mongooseschema= require('models/userdata');
+var multer = require ('multer');
 var AWS = require('aws-sdk');
 AWS.config.update({
     accessKeyId: 'AKIAJRSSTBSKXU62UWUA',
@@ -31,6 +28,29 @@ router.use(multer({ dest: './uploads6/',
         done=true;
     }
 }));
+
+router.get('/:user_id', function (req, res) { // get user profile by id
+    var user_id = req.params.user_id;
+    if (user_id < 0) {
+        res.status(404).send('Invalid user id');
+    }
+    User.findOne({userId:user_id},function(err,foundUser){
+        if (err || foundUser===null) {
+            res.status(404);
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+                "message": "User Not Found"
+            });
+        }
+        else {
+            res.status(200);
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+                "user": foundUser
+            });
+        }
+    });
+});
 
 //app.use(session({
 //    secret: 'keyboard cat',
@@ -55,6 +75,7 @@ router.post('/',function(req,res){
             console.log(newUser);
             newUser.save(function (err, newUser) {
                 if (err){
+                    console.log(err);
                     res.status(404).send(err);
                 }
                 else {
@@ -84,29 +105,6 @@ router.post('/',function(req,res){
     });
 });
 
-router.get('/:user_id', function (req, res) { // get user profile by id
-    var user_id = req.params.user_id;
-    if (user_id < 0) {
-        res.status(404).send('Invalid user id');
-    }
-    User.findOne({userId:user_id},function(err,foundUser){
-        if (err || foundUser===null) {
-            res.status(200);
-            res.setHeader('Content-Type', 'application/json');
-            res.json({
-                "message": "User Not Found"
-            });
-        }
-        else {
-            res.status(200);
-            res.setHeader('Content-Type', 'application/json');
-            res.json({
-                "user": foundUser
-            });
-        }
-    });
-});
-
 router.post('/:user_id/album',function (req, res) { // create new album
     var album_id = chance.natural({min: 1, max: 1000}).toString();
     User.findOne({userId:req.params.user_id}, function (err, foundUser) {
@@ -120,7 +118,7 @@ router.post('/:user_id/album',function (req, res) { // create new album
             });
             foundUser.save(function (err) {
                 if (err) {
-                    res.status(200);
+                    res.status(404);
                     res.setHeader('Content-Type', 'application/json');
                     res.json({
                         "message": "Cannot create album"
@@ -140,11 +138,25 @@ router.post('/:user_id/album',function (req, res) { // create new album
     });
 });
 
+router.get('/:user_id/album/',function (req, res) {
+    User.find({userId:req.params.user_id},{album:1}, function (err, result) {
+        if (err) {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(404).send("Cannot find user or album with given id");
+        }
+        else {
+            res.status(200);
+            res.setHeader('Content-Type', 'application/json');
+            res.send(result);
+        }
+    });
+});
+
 router.get('/:user_id/album/:album_id',function (req, res) { // get album by id
     User.findOne({userId:req.params.user_id, 'album.albumId': req.params.album_id},{'album.$': 1}, function (err, result) {
         if (err) {
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).send("Cannot find user or album with given id" + err);
+            res.status(404).send("Cannot find user or album with given id" + err);
         }
         else {
             res.status(200);
@@ -159,38 +171,27 @@ router.delete('/:user_id/album/:album_id',function (req, res) { // delete album 
         {$pull:{album:{albumId:req.params.album_id}}},
         {safe:true},
         function (err, result) {
-        if (err) {
-            res.setHeader('Content-Type', 'application/json');
-            res.status(200).send("Cannot find user or album with given id" + err);
-        }
-        else {
-            res.setHeader('Content-Type', 'application/json');
-            res.status(204).send(result);
-        }
-    });
+            if (err) {
+                console.log(err);
+                res.setHeader('Content-Type', 'application/json');
+                res.status(404).send("Cannot find user or album with given id" + err);
+            }
+            else {
+                console.log("second delete in photo collection");
+                Photo.remove({userId:req.params.user_id, albumId: req.params.album_id},function(err,result){
+                    if (err) {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(404).send("Cannot find user or album with given id" + err);
+                    }
+                    else{
+                        console.log("successfully remove");
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(204).send(result);
+                    }
+                })
+            }
+        });
 });
-
-//router.put('/:user_id/album/:album_id',function (req, res) { // edit album by id
-//    User.findOne({userId:req.params.user_id, 'album.albumId': req.params.album_id},{'album.$': 1}, function (err, foundAlbum) {
-//        if (err) {
-//            res.status(404).send("Cannot find user or album with given id" + err);
-//        }
-//        else {
-//            User.update({'album.albumId': req.params.album_id},
-//                {'$set': {
-//                    albumName: req.body.albumName
-//                }
-//            }, function (err, albumAffected) {
-//                if (err) {
-//                    res.status(404).send("Error updating" + err);
-//                }
-//                else {
-//                    res.status(200).send("Successfully update album " + albumAffected);
-//                }
-//            });
-//        }
-//    });
-//});
 
 router.post('/:user_id/album/:album_id/photo',function (req, res) { // create new photo
     var photo_id = chance.natural({min: 1, max: 1000}).toString();
@@ -206,7 +207,7 @@ router.post('/:user_id/album/:album_id/photo',function (req, res) { // create ne
             console.log("file read success");
             //    console.log("image data-"+data);
             var params={
-                Bucket:"photoshareappcmpe277",
+                Bucket:"mini-linkedin",
                 Key: req.files.thumbnail.name,
                 ContentType: 'image/jpg',
                 CacheControl: 'max-age=31536000',
@@ -227,7 +228,7 @@ router.post('/:user_id/album/:album_id/photo',function (req, res) { // create ne
                     userId: req.params.user_id,
                     photoName: req.params.photoName,
                     photoUrl: url,
-                    tinyUrl: req.body.tinyUrl,
+                    location: req.body.location,
                     metadata: req.body.metadata,
                     public: req.body.public
                 });
@@ -239,17 +240,18 @@ router.post('/:user_id/album/:album_id/photo',function (req, res) { // create ne
                     if (err){
                         res.setHeader('Content-Type', 'application/json');
                         res.status(200).send(err);
+                        console.log(err);
                     }
                     else {
                         res.setHeader('Content-Type', 'application/json');
                         res.status(201).send(newPhoto);
+                        console.log("Success: ");
                     }
                 })
 
             });
         }
     });
-
 });
 
 router.get('/:user_id/album/:album_id/photos',function (req, res) { // get all photos in an album
@@ -297,34 +299,34 @@ router.get('/:user_id/search', function(req, res) { // search album name or phot
     if (option!=null && query!=null){
         if(option=="photo") {
             console.log("search for " + option + " " + query);
-            Photo.find({userId:req.params.user_id,'$or': [{metadata: {'$in': [query]}}, {photoName: {$regex: new RegExp('^' + query, 'i')}}]},
+            Photo.find({userId:req.params.user_id,'$or': [{metadata: {$regex: new RegExp('^' + query, 'i')}}, {location: {$regex: new RegExp('^' + query, 'i')}}, {photoName: {$regex: new RegExp('^' + query, 'i')}}]},
                 function (err, foundPhoto) {
-                if (err) {
-                    console.log(err);
-                    res.setHeader('Content-Type', 'application/json');
-                    res.status(200).send("Cannot find");
-                }
-                else {
-                    res.setHeader('Content-Type', 'application/json');
-                    res.status(200).send(foundPhoto);
-                }
-            })
+                    if (err) {
+                        console.log(err);
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(200).send("Cannot find");
+                    }
+                    else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(200).send(foundPhoto);
+                    }
+                })
         }
         if(option=="album") {
             console.log("search for " + option + " " + query);
             User.find(
                 {userId:req.params.user_id, 'album.albumName':{$regex: new RegExp('^' + query, 'i')}},{'album.$': 1},
                 function (err, foundAlbum) {
-                if (err) {
-                    console.log(err);
-                    res.setHeader('Content-Type', 'application/json');
-                    res.status(200).send("Cannot find");
-                }
-                else {
-                    res.setHeader('Content-Type', 'application/json');
-                    res.status(200).send(foundAlbum);
-                }
-            })
+                    if (err) {
+                        console.log(err);
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(200).send("Cannot find");
+                    }
+                    else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(200).send(foundAlbum);
+                    }
+                })
         }
     }
 });
