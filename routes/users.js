@@ -60,49 +60,62 @@ router.get('/:user_id', function (req, res) { // get user profile by id
 
 // when user successfully log in with facebook, it will hit this
 router.post('/',function(req,res){
-    User.count({userId:req.body.userId }, function (err, count){
-        if(count <= 0){// user not exist ,create new user
-            var newUser = new User ({
-                userId : req.body.userId, // facebook id
-                name : req.body.name,
-                email: req.body.email,
-                profilepicUrl: req.body.profilepicUrl,
-                album: [{
-                    albumId:"0", // default album
-                    albumName: "Default" // createAt by default
-                }]
-            });
-            console.log(newUser);
-            newUser.save(function (err, newUser) {
-                if (err){
-                    console.log(err);
-                    res.status(404).send(err);
-                }
-                else {
-                    console.log("Success");
-                    res.status(201);
-                    res.setHeader('Content-Type', 'application/json');
-                    var mongoresponse = User;
-                    console.log("mongoresponse==" + newUser);
-                    // Send success response back.
-                    res.json({
-                        "success": "user created",
-                        "userIDs": req.body.userId,
-                        "mongodata": newUser
-                    });
-                }
-            });
-        }
-        else{ // user exist
-            res.status(200);
-            res.setHeader('Content-Type', 'application/json');
-            res.json({
-                "message": "user already exist",
-                "error": err,
-                "userId" : req.body.userId
-            });
-        }
-    });
+    if (req.body.userId == "0"){
+        res.status(200);
+        console.log("This is a guest user");
+        res.setHeader('Content-Type', 'application/json');
+        res.json({
+            "success": "use guest account",
+            "userIDs": "0",
+            "name": "Guest",
+            "email" : "guest@gmail.com"
+        });
+    }
+    else {
+        User.count({userId: req.body.userId}, function (err, count) {
+            if (count <= 0) {// user not exist ,create new user
+                var newUser = new User({
+                    userId: req.body.userId, // facebook id
+                    name: req.body.name,
+                    email: req.body.email,
+                    profilepicUrl: req.body.profilepicUrl,
+                    album: [{
+                        albumId: "0", // default album
+                        albumName: "Default" // createAt by default
+                    }]
+                });
+                console.log(newUser);
+                newUser.save(function (err, newUser) {
+                    if (err) {
+                        console.log(err);
+                        res.status(404).send(err);
+                    }
+                    else {
+                        console.log("Success");
+                        res.status(201);
+                        res.setHeader('Content-Type', 'application/json');
+                        var mongoresponse = User;
+                        console.log("mongoresponse==" + newUser);
+                        // Send success response back.
+                        res.json({
+                            "success": "user created",
+                            "userIDs": req.body.userId,
+                            "mongodata": newUser
+                        });
+                    }
+                });
+            }
+            else { // user exist
+                res.status(200);
+                res.setHeader('Content-Type', 'application/json');
+                res.json({
+                    "message": "user already exist",
+                    "error": err,
+                    "userId": req.body.userId
+                });
+            }
+        });
+    }
 });
 
 router.post('/:user_id/album',function (req, res) { // create new album
