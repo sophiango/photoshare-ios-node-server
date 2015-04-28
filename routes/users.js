@@ -226,7 +226,7 @@ router.post('/:user_id/album/:album_id/photo',function (req, res) { // create ne
                     photoId:photo_id,
                     albumId: req.params.album_id,
                     userId: req.params.user_id,
-                    photoName: req.params.photoName,
+                    photoName: req.body.photoName,
                     photoUrl: url,
                     location: req.body.location,
                     metadata: req.body.metadata,
