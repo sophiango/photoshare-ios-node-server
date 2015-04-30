@@ -20,7 +20,7 @@ var app = express();
 app.use(bodyParser.json());
 
 
-mongoose.connect('mongodb://cmpe277:cmpe277@ds047107.mongolab.com:47107/cmpe277');
+mongoose.connect('mongodb://cmpe277:cmpe277@ds041168.mongolab.com:41168/cmpe277');
 
 // view engine setup
 //app.set('views', path.join(__dirname, 'views'));
