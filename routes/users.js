@@ -8,8 +8,8 @@ var fs = require('fs');
 var multer = require ('multer');
 var AWS = require('aws-sdk');
 AWS.config.update({
-    accessKeyId: 'AKIAJRSSTBSKXU62UWUA',
-    secretAccessKey: '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',
+    accessKeyId: 'ACCESS_KEYA',
+    secretAccessKey: 'SECRET_KEYJ',
     region:'us-west-1'
 });
 var s3= new AWS.S3();
